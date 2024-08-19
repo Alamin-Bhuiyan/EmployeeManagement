@@ -9,9 +9,9 @@ namespace EmployeeManagement.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
 
-        public HomeController() 
+        public HomeController(IEmployeeRepository employeeRepository) 
         {
-            _employeeRepository = new MockEmployeeRepository();
+            _employeeRepository = employeeRepository;
         }
         [Route("")]
         [Route("/")]
@@ -38,11 +38,15 @@ namespace EmployeeManagement.Controllers
             return View();
         }
         [HttpPost]
-        public RedirectToActionResult Create(Employee employee)
+        public IActionResult Create(Employee employee)
         {
-            Employee newEmployee = _employeeRepository.Add(employee);
-            var temp = _employeeRepository;
-            return RedirectToAction("details", new { id = newEmployee.Id});
+            if (ModelState.IsValid)
+            {
+                Employee newEmployee = _employeeRepository.Add(employee);
+                return RedirectToAction("details", new { id = newEmployee.Id });
+            }
+
+            return View();
         }
     }
 }
